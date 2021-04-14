@@ -10,10 +10,10 @@ public class DocumentInfoDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String name;
 	private String creationUser;
-	private String comment;
 	private Date creationDate;
 	private Date lastModifiedDate;
+	private String name;
+	private String comment;
 
 }

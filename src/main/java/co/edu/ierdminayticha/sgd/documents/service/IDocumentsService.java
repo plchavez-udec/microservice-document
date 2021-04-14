@@ -4,6 +4,7 @@ import java.util.List;
 
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentRequestDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentResponseDto;
+import co.edu.ierdminayticha.sgd.documents.dto.DocumentUpdateRequestDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentsResponseListDto;
 
 public interface IDocumentsService {
@@ -14,7 +15,7 @@ public interface IDocumentsService {
 
 	List<DocumentsResponseListDto> findAll();
 
-	void update(Long id, DocumentRequestDto dto);
+	void update(Long id, DocumentUpdateRequestDto dto);
 
 	void delete(Long id);
 

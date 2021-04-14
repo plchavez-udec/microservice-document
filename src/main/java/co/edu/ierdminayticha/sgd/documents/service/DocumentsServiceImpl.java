@@ -25,6 +25,7 @@ import co.edu.ierdminayticha.sgd.documents.dto.ContentInfoDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentInfoDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentRequestDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentResponseDto;
+import co.edu.ierdminayticha.sgd.documents.dto.DocumentUpdateRequestDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentaryTypeOutDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentsResponseListDto;
 import co.edu.ierdminayticha.sgd.documents.dto.PreservationInfo;
@@ -45,7 +46,7 @@ import lombok.extern.log4j.Log4j2;
 public class DocumentsServiceImpl implements IDocumentsService {
 
 	private static final String EXISTING_RESOURCE_MESSAGE = "El documento con nombre (%s) ya existe ";
-	private static final String NO_EXISTEN_RESOURCE_MESSAGE = "No existe el recurso con id (%s) ";
+	private static final String NO_EXISTEN_RESOURCE_MESSAGE = "No existe el documento con id (%s) ";
 	private static final String NO_EXISTEN_INFO_MESSAGE = "No existe información para mostrar";
 
 	@Autowired
@@ -116,16 +117,53 @@ public class DocumentsServiceImpl implements IDocumentsService {
 	}
 
 	@Override
-	public void update(Long id, DocumentRequestDto dto) {
+	public void update(Long id, DocumentUpdateRequestDto request) {
 
 		log.info("DocumentsServiceImpl : update - Actualizando recurso");
 
 		DocumentsEntity entity = this.repository.findById(id)
 				.orElseThrow(() -> new NoSuchElementException(String.format(NO_EXISTEN_RESOURCE_MESSAGE, id)));
 
-		this.modelMapper.map(dto, entity);
+		// Modificación del nombre
+		if (request.getName() != null) {
+			entity.getMetadataEntity().setName(request.getName());
+		}
+		// Modificacion de los cometarios
+		if (request.getComment() != null) {
+			entity.getMetadataEntity().setComment(request.getComment());
+		}
 
-		// entity.setLastModifiedDate(new Date());
+		// Modificar la unicación
+		if (request.getLocation() != null) {
+			entity.getMetadataEntity().setLocation(request.getLocation());
+		}
+
+		// Modificar fecha de conservación (cuando aplique)
+		if (request.getPreservationInfo() != null) {
+			Calendar c = Calendar.getInstance();
+			c.setTime(entity.getMetadataEntity().getPreservationDate());
+			// Validar a que parte de la fecha se quiere agregar mas tiempo
+			// (dias, meses o anios)
+			if (request.getPreservationInfo().getPartDate().equals("DIAS")) {
+				c.add(Calendar.DAY_OF_YEAR, request.getPreservationInfo().getTime());
+			} else if (request.getPreservationInfo().getPartDate().equals("MESES")) {
+				c.add(Calendar.MONTH, request.getPreservationInfo().getTime());
+			} else if (request.getPreservationInfo().getPartDate().equals("ANIOS")) {
+				c.add(Calendar.YEAR, request.getPreservationInfo().getTime());
+			}
+			entity.getMetadataEntity().setPreservationDate(c.getTime());
+		}
+		// Agregar nuevos metadatos especificos
+		if (request.getSpecificMetadata() != null) {
+			for (SpecificMetadataDto specificMetadata : request.getSpecificMetadata()) {
+				SpecificMetadataEntity specificMetadataEntity = new SpecificMetadataEntity();
+				specificMetadataEntity.setName(specificMetadata.getName());
+				specificMetadataEntity.setValue(specificMetadata.getValue());
+				entity.getMetadataEntity().addSpecificMetadata(specificMetadataEntity);
+			}
+		}
+
+		entity.getMetadataEntity().setLastModifiedDate(new Date());
 
 		this.repository.save(entity);
 
@@ -200,9 +238,9 @@ public class DocumentsServiceImpl implements IDocumentsService {
 
 		}
 		entity.setMetadataEntity(metadataEntity);
-		DocumentsEntity entityOut =  repository.save(entity);
-		
-		//Invocar microservicio para agregar el documento al folder correspondinete
+		DocumentsEntity entityOut = repository.save(entity);
+
+		// Invocar microservicio para agregar el documento al folder correspondinete
 		invokeLogicalFolderAddChildren(entityOut);
 
 		return entity;
@@ -312,34 +350,38 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		Map<String, Object> uriParams = new HashMap<>();
 		uriParams.put("logical-folder-id", id);
 		try {
-			String prueba  = properties.getUrlGetLogicalFolderById();
+			String prueba = properties.getUrlGetLogicalFolderById();
 			response = restTemplate.getForEntity(prueba, String.class, uriParams);
 		} catch (HttpClientErrorException e) {
-			log.error("DocumentsServiceImpl : invokeLogicalFolderByIdMicroservice - (HttpClientErrorException) falló el "
-					+ "consumo del microservicio, error: {}", e.getCause());
+			log.error(
+					"DocumentsServiceImpl : invokeLogicalFolderByIdMicroservice - (HttpClientErrorException) falló el "
+							+ "consumo del microservicio, error: {}",
+					e.getCause());
 			throw new GeneralException(e.getMessage());
 		} catch (RestClientException e) {
-			log.error("DocumentsServiceImpl : invokeLogicalFolderByIdMicroservice - (HttpClientErrorException) falló el "
-					+ "consumo del microservicio, error: {}zxxxhg", e.getCause());
+			log.error(
+					"DocumentsServiceImpl : invokeLogicalFolderByIdMicroservice - (HttpClientErrorException) falló el "
+							+ "consumo del microservicio, error: {}zxxxhg",
+					e.getCause());
 			throw new GeneralException(e.getMessage());
 		}
 		return response;
 	}
-	
+
 	private void invokeLogicalFolderAddChildren(DocumentsEntity documentsEntity) {
 		log.info("DocumentsServiceImpl : invokeLogicalFolderAddChildren - Invocando microservicio LogicalFolder");
-		
-		//Uri params de la solicitud
+
+		// Uri params de la solicitud
 		Map<String, Object> uriParams = new HashMap<>();
 		uriParams.put("logical-folder-id", documentsEntity.getMetadataEntity().getParent());
-		
-		//Cuerpo de la solicitud
-		ChildrenInDto childrenInDto= new ChildrenInDto();
+
+		// Cuerpo de la solicitud
+		ChildrenInDto childrenInDto = new ChildrenInDto();
 		childrenInDto.setId(documentsEntity.getId());
 		childrenInDto.setName(documentsEntity.getMetadataEntity().getName());
 		childrenInDto.setNodeType(2L);
 		HttpEntity<ChildrenInDto> request = new HttpEntity<>(childrenInDto);
-		
+
 		try {
 			restTemplate.postForEntity(properties.getUrlAddChildrenToFolder(), request, String.class, uriParams);
 		} catch (HttpClientErrorException e) {

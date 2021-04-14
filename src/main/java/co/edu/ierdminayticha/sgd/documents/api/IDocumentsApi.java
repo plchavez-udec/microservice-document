@@ -12,11 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import co.edu.ierdminayticha.sgd.documents.dto.IRequestCreateValidation;
-import co.edu.ierdminayticha.sgd.documents.dto.IRequestUpdateValidation;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentRequestDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentResponseDto;
+import co.edu.ierdminayticha.sgd.documents.dto.DocumentUpdateRequestDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentsResponseListDto;
+import co.edu.ierdminayticha.sgd.documents.dto.IRequestCreateValidation;
+import co.edu.ierdminayticha.sgd.documents.dto.IRequestUpdateValidation;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -47,14 +48,14 @@ public interface IDocumentsApi {
 
 	@ApiOperation(value = "Actualización parcial del documento",
       	  		  response = DocumentRequestDto.class)
-	@PatchMapping(value = "{documento-id}", 
+	@PatchMapping(value = "/{document-id}", 
 			 	  consumes = MediaType.APPLICATION_JSON_VALUE)
 	ResponseEntity<?> update(
 							 @PathVariable("documento-id")
 							 Long id,
 							 @Validated(IRequestUpdateValidation.class)
 					  		 @RequestBody
-							 DocumentRequestDto request);
+					  		DocumentUpdateRequestDto request);
 
 	@ApiOperation(value = "Eliminación de un documento",
 	  		  response = DocumentRequestDto.class)

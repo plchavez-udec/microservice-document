@@ -13,9 +13,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import co.edu.ierdminayticha.sgd.documents.api.IDocumentsApi;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentRequestDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentResponseDto;
+import co.edu.ierdminayticha.sgd.documents.dto.DocumentUpdateRequestDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentsResponseListDto;
 import co.edu.ierdminayticha.sgd.documents.service.IDocumentsService;
 import lombok.extern.log4j.Log4j2;
+
+//url.microservice.document.update-location= http://microservice-document/document/v1/document/{document-id}
 
 @Log4j2
 @RefreshScope
@@ -64,7 +67,7 @@ public class DocumentsController implements IDocumentsApi {
 	}
 
 	@Override
-	public ResponseEntity<?> update(Long id, DocumentRequestDto request) {
+	public ResponseEntity<?> update(Long id, DocumentUpdateRequestDto request) {
 
 		log.info("IReferenciaApiImplController : update - Actualizando recurso con id {}, " + "nuevos valores: {}", id,
 				request);
