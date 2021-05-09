@@ -1,21 +1,18 @@
 package co.edu.ierdminayticha.sgd.documents.api;
 
-import java.util.List;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentRequestDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentResponseDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentUpdateRequestDto;
-import co.edu.ierdminayticha.sgd.documents.dto.DocumentsResponseListDto;
 import co.edu.ierdminayticha.sgd.documents.dto.IRequestCreateValidation;
 import co.edu.ierdminayticha.sgd.documents.dto.IRequestUpdateValidation;
 import io.swagger.annotations.Api;
@@ -40,26 +37,19 @@ public interface IDocumentsApi {
 			    produces = MediaType.APPLICATION_JSON_VALUE)
 	ResponseEntity<DocumentResponseDto> findById(@PathVariable("documento-id") Long id);
 
-	@ApiOperation(value = "Obtener lista de recurso",
-            	  response = DocumentsResponseListDto.class)
-	@GetMapping(value = "", 
-				produces = MediaType.APPLICATION_JSON_VALUE)
-	ResponseEntity<List<DocumentsResponseListDto>> findAll();
-
 	@ApiOperation(value = "Actualización parcial del documento",
       	  		  response = DocumentRequestDto.class)
-	@PatchMapping(value = "/{document-id}", 
+	@PostMapping(value = "{document-id}", 
 			 	  consumes = MediaType.APPLICATION_JSON_VALUE)
-	ResponseEntity<?> update(
-							 @PathVariable("documento-id")
+	ResponseEntity<String> update(
+							 @PathVariable("document-id")
 							 Long id,
-							 @Validated(IRequestUpdateValidation.class)
 					  		 @RequestBody
 					  		DocumentUpdateRequestDto request);
 
 	@ApiOperation(value = "Eliminación de un documento",
 	  		  response = DocumentRequestDto.class)
 	@DeleteMapping(value = "{documento-id}")
-	ResponseEntity<?> delete(Long id);
+	ResponseEntity<String> delete(Long id);
 
 }

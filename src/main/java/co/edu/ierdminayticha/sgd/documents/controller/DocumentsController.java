@@ -1,7 +1,6 @@
 package co.edu.ierdminayticha.sgd.documents.controller;
 
 import java.net.URI;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -14,16 +13,13 @@ import co.edu.ierdminayticha.sgd.documents.api.IDocumentsApi;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentRequestDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentResponseDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentUpdateRequestDto;
-import co.edu.ierdminayticha.sgd.documents.dto.DocumentsResponseListDto;
 import co.edu.ierdminayticha.sgd.documents.service.IDocumentsService;
 import lombok.extern.log4j.Log4j2;
-
-//url.microservice.document.update-location= http://microservice-document/document/v1/document/{document-id}
 
 @Log4j2
 @RefreshScope
 @RestController
-@RequestMapping(value = "document/v1/document")
+@RequestMapping(value = "v1/document")
 public class DocumentsController implements IDocumentsApi {
 
 	@Autowired
@@ -31,71 +27,39 @@ public class DocumentsController implements IDocumentsApi {
 
 	@Override
 	public ResponseEntity<DocumentResponseDto> create(DocumentRequestDto request) {
-
-		log.info("IReferenciaApiImplController : create - Creando recurso {}", request);
-
+		log.info("create :: Crear documento {}", request);
 		DocumentResponseDto response = service.create(request);
-
-		log.info("IReferenciaApiImplController : create - Transacción exitosa, recurso creado: " + "{}", response);
-
+		log.info("create :: Transacción exitosa, documento creado: {}", response);
 		return buildCreationResponse(response);
 	}
 
 	@Override
 	public ResponseEntity<DocumentResponseDto> findById(Long id) {
-
-		log.info("IReferenciaApiImplController : findById - Consultando recurso con id " + "{}", id);
-
+		log.info("findById :: Consultar carpeta con id " + "{}", id);
 		DocumentResponseDto response = this.service.findById(id);
-
-		log.info("IReferenciaApiImplController : findById - Transacción exitosa, recurso: " + "{}", response);
-
+		log.info("findById :: Transacción exitosa, carpeta: {}", response);
 		return ResponseEntity.ok(response);
 	}
 
 	@Override
-	public ResponseEntity<List<DocumentsResponseListDto>> findAll() {
-
-		log.info("IReferenciaApiImplController : findAll - Consultando todos los registros");
-
-		List<DocumentsResponseListDto> response = service.findAll();
-
-		log.info("IReferenciaApiImplController : findAll - Transacción exitosa, registros " + "consultados: ",
-				response);
-
-		return ResponseEntity.ok(response);
-	}
-
-	@Override
-	public ResponseEntity<?> update(Long id, DocumentUpdateRequestDto request) {
-
-		log.info("IReferenciaApiImplController : update - Actualizando recurso con id {}, " + "nuevos valores: {}", id,
-				request);
-
+	public ResponseEntity<String> update(Long id, DocumentUpdateRequestDto request) {
+		log.info("update :: Actualizar carpeta con id {}, nuevos valores: {}", id, request);
 		service.update(id, request);
-
-		log.info("IReferenciaApiImplController : update - Transacción exitosa, registro " + "actualizado");
-
+		log.info("update :: Transacción exitosa, registro actualizado");
 		return ResponseEntity.noContent().build();
 	}
 
 	@Override
-	public ResponseEntity<?> delete(Long id) {
-
-		log.info("IReferenciaApiImplController : delete - Eliminando recurso con id {}", id);
-
+	public ResponseEntity<String> delete(Long id) {
+		log.info("delete :: Eliminar carpeta con id {}", id);
 		this.service.delete(id);
-
-		log.info("IReferenciaApiImplController : delete - Transacción exitosa, recurso " + "eliminado");
-
+		log.info("delete :: Transacción exitosa, carpeta eliminado");
 		return ResponseEntity.ok().build();
 	}
 
 	private ResponseEntity<DocumentResponseDto> buildCreationResponse(DocumentResponseDto response) {
-
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{referencia-id}")
 				.buildAndExpand(response.getId()).toUri();
-
 		return ResponseEntity.created(uri).body(response);
 
 	}

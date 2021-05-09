@@ -11,6 +11,6 @@ public class ContentInfoDto implements Serializable {
 
 	private String contentType;
 	private String documentFamily;
-	private Integer size;;
+	private Integer size;
 
 }

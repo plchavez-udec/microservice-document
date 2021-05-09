@@ -16,7 +16,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "\"DOCUMENTOS\"")
-public class DocumentsEntity {
+public class DocumentEntity {
 
 	@Id
 	@SequenceGenerator(name = "\"SEQ_DOCUMENTOS_ID\"", allocationSize = 1)

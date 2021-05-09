@@ -12,7 +12,7 @@ public class DocumentRequestDto implements Serializable {
 
 	private Long parent;
 	private Long documentaryType;
-	private Long documentaryUnit;
+	private DocumentaryUnitDto documentaryUnit;
 	private Long securityLevel;
 	private DocumentInfoDto documentInfo;
 	private ContentInfoDto dontentInfo;

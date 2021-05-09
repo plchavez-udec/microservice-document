@@ -5,11 +5,10 @@ import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class ChildrenInDto implements Serializable {
+public class DocumentaryUnitDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private Long id;
-	private Long nodeType;
-	private String name;
+	private Long idSerie;
+	private Long idSubserie;
 
 }

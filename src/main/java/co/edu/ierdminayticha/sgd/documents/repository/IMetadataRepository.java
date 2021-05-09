@@ -8,6 +8,6 @@ import co.edu.ierdminayticha.sgd.documents.entity.MetadataEntity;
 @Repository
 public interface IMetadataRepository extends CrudRepository<MetadataEntity, Long> {
 
-	MetadataEntity findByName(String name);
+	MetadataEntity findByNameAndParent(String name, Long idParent);
 
 }

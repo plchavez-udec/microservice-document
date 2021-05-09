@@ -32,8 +32,11 @@ public class MetadataEntity {
 	@Column(name = "\"ID_TIPO_DOCUMENTAL_FK\"")
 	private Long documentaryType;
 
-	@Column(name = "\"ID_UNIDAD_DOCUMENTAL_FK\"")
-	private Long documentaryUnit;
+	@Column(name = "\"ID_SERIE_FK\"")
+	private Long idSerie;
+	
+	@Column(name = "\"ID_SUBSERIE_FK\"")
+	private Long idSubSerie;
 
 	@ManyToOne
 	@JoinColumn(name = "\"ID_NIVEL_SEGURIDAD_FK\"")
