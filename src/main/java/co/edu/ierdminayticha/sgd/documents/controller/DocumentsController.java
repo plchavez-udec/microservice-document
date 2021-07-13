@@ -27,33 +27,33 @@ public class DocumentsController implements IDocumentsApi {
 
 	@Override
 	public ResponseEntity<DocumentResponseDto> create(DocumentRequestDto request) {
-		log.info("create :: Crear documento {}", request);
+		log.info("create - Crear documento {}", request);
 		DocumentResponseDto response = service.create(request);
-		log.info("create :: Transacción exitosa, documento creado: {}", response);
+		log.info("create - Crear documento. Transacción exitosa {}", response);
 		return buildCreationResponse(response);
 	}
 
 	@Override
 	public ResponseEntity<DocumentResponseDto> findById(Long id) {
-		log.info("findById :: Consultar carpeta con id " + "{}", id);
+		log.info("findById - Consultar carpeta con id " + "{}", id);
 		DocumentResponseDto response = this.service.findById(id);
-		log.info("findById :: Transacción exitosa, carpeta: {}", response);
+		log.info("findById - Transacción exitosa, carpeta: {}", response);
 		return ResponseEntity.ok(response);
 	}
 
 	@Override
 	public ResponseEntity<String> update(Long id, DocumentUpdateRequestDto request) {
-		log.info("update :: Actualizar carpeta con id {}, nuevos valores: {}", id, request);
+		log.info("update - Actualizar carpeta con id {}, nuevos valores: {}", id, request);
 		service.update(id, request);
-		log.info("update :: Transacción exitosa, registro actualizado");
+		log.info("update - Transacción exitosa, registro actualizado");
 		return ResponseEntity.noContent().build();
 	}
 
 	@Override
 	public ResponseEntity<String> delete(Long id) {
-		log.info("delete :: Eliminar carpeta con id {}", id);
+		log.info("delete - Eliminar carpeta con id {}", id);
 		this.service.delete(id);
-		log.info("delete :: Transacción exitosa, carpeta eliminado");
+		log.info("delete - Transacción exitosa, carpeta eliminado");
 		return ResponseEntity.ok().build();
 	}
 

@@ -10,12 +10,10 @@ public class DocumentRequestDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Long parent;
-	private Long documentaryType;
+	private Long parent;	
 	private DocumentaryUnitDto documentaryUnit;
-	private Long securityLevel;
 	private DocumentInfoDto documentInfo;
-	private ContentInfoDto dontentInfo;
+	private ContentInfoDto contentInfo;
 	private BinaryInfoDto binaryInfo;
 	private List<SpecificMetadataDto> specificMetadata;
 

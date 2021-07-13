@@ -10,5 +10,6 @@ public class DocumentaryUnitDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Long idSerie;
 	private Long idSubserie;
+	private Long documentaryType;
 
 }

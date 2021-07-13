@@ -13,7 +13,7 @@ public class DocumentInfoDto implements Serializable {
 	private String creationUser; //po debajo
 	private Date creationDate;
 	private Date lastModifiedDate;
-	private String name; //si- pero se obtiene del archivo
-	private String comment; //si
+	private String name;
+	private String comment;
 
 }
