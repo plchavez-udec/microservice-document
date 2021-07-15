@@ -1,6 +1,5 @@
 package co.edu.ierdminayticha.sgd.documents.service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -59,7 +58,7 @@ public class DocumentsServiceImpl implements IDocumentsService {
 				request.getParent());
 		// Validar información de la unidad documental (serio o subserie) y obtener la
 		// fecha de preservaciónde la misma
-		LocalDate preservationDate = this.getInfoDocumentaryUnit(
+		Date preservationDate = this.getInfoDocumentaryUnit(
 				request.getDocumentaryUnit());
 		// Validar existencia del tipo documental y obtener su información
 		String documentaryType = invokeDocumentaryTypeMicroservice(
@@ -144,7 +143,7 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		}
 	}
 
-	private DocumentEntity toPersist(DocumentRequestDto request, LocalDate preservationDate, String logicalFolder) {
+	private DocumentEntity toPersist(DocumentRequestDto request, Date preservationDate, String logicalFolder) {
 		DocumentEntity entity = new DocumentEntity();
 		entity.setBinaryCode(request.getBinaryInfo().getFieldId());
 		// Metadata
@@ -290,7 +289,7 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		}
 	}
 
-	private LocalDate getInfoDocumentaryUnit(DocumentaryUnitDto documentaryUnit) {
+	private Date getInfoDocumentaryUnit(DocumentaryUnitDto documentaryUnit) {
 		String infoDocumentaryUnit = null;
 		if (documentaryUnit.getIdSerie() != null && 
 			documentaryUnit.getIdSubserie() != null) {
