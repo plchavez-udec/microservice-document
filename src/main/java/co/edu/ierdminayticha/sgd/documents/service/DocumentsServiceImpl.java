@@ -120,6 +120,10 @@ public class DocumentsServiceImpl implements IDocumentsService {
 				entity.getMetadataEntity().addSpecificMetadata(specificMetadataEntity);
 			}
 		}
+		//Modificar ubicación
+		if (request.getLocationInfo() != null) {
+			entity.getMetadataEntity().setParent(request.getLocationInfo().getFolderId());
+		}
 		entity.getMetadataEntity().setLastModifiedDate(new Date());
 		this.repository.save(entity);
 	}

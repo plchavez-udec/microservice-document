@@ -44,7 +44,7 @@ public class DocumentsController implements IDocumentsApi {
 	@Override
 	public ResponseEntity<String> update(Long id, DocumentUpdateRequestDto request) {
 		log.info("update - Actualizar carpeta con id {}, nuevos valores: {}", id, request);
-		service.update(id, request);
+		this.service.update(id, request);
 		log.info("update - Transacción exitosa, registro actualizado");
 		return ResponseEntity.noContent().build();
 	}

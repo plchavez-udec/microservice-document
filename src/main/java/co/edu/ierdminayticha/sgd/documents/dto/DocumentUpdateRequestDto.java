@@ -13,7 +13,7 @@ public class DocumentUpdateRequestDto implements Serializable {
 
 	private String name;
 	private String comment;
-	private String location;
+	private LocationInformationDto locationInfo;
 	private PreservationInfoUpdate preservationInfo; 
 	private List<SpecificMetadataDto> specificMetadata;
 
