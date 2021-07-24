@@ -11,8 +11,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -35,9 +33,6 @@ public class MetadataEntity {
 	private Long idSerie;
 	@Column(name = "\"ID_SUBSERIE_FK\"")
 	private Long idSubSerie;
-	@ManyToOne
-	@JoinColumn(name = "\"ID_NIVEL_SEGURIDAD_FK\"")
-	private SecurityLevelEntity securityLevel;
 	@Column(name = "\"ID_CARPETA_PADRE_FK\"")
 	private Long parent;
 	@Column(name = "\"NOMBRE\"")
