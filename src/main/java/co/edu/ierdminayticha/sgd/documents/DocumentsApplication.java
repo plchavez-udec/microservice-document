@@ -13,7 +13,9 @@ import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+@EnableSwagger2
 @EnableCircuitBreaker
 @EnableEurekaClient
 @SpringBootApplication
@@ -27,8 +29,8 @@ public class DocumentsApplication {
     public Docket api() { 
         return new Docket(DocumentationType.SWAGGER_2)  
           .select()                                  
-          .apis(RequestHandlerSelectors.any())              
-          .paths(PathSelectors.any())                          
+          .apis(RequestHandlerSelectors.basePackage("co.edu.ierdminayticha.sgd.documents.controller"))              
+          .paths(PathSelectors.any())
           .build();                                           
     }
 

@@ -1,5 +1,6 @@
 package co.edu.ierdminayticha.sgd.documents.entity;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -48,7 +49,7 @@ public class MetadataEntity {
 	@Column(name = "\"CODIGO_BINARIO\"")
 	private String fieldId;
 	@Column(name = "\"FECHA_CONSERVACION\"")
-	private Date preservationDate;
+	private LocalDate preservationDate;
 	@Column(name = "\"FUNCIONAL_ID\"")
 	private Long funcionalId;
 	@Column(name = "\"FUNIONAL_VERSION\"")

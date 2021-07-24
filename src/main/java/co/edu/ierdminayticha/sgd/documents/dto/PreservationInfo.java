@@ -1,7 +1,7 @@
 package co.edu.ierdminayticha.sgd.documents.dto;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 import lombok.Data;
 
@@ -9,7 +9,7 @@ import lombok.Data;
 public class PreservationInfo implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private Date preservatoinDate;
-	private int remainingStorageTime;
+	private LocalDate preservatoinDate;
+	private long conservationTime;
 
 }

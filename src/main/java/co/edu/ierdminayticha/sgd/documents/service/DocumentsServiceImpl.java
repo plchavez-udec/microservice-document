@@ -1,7 +1,8 @@
 package co.edu.ierdminayticha.sgd.documents.service;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,7 +59,7 @@ public class DocumentsServiceImpl implements IDocumentsService {
 				request.getParent());
 		// Validar información de la unidad documental (serio o subserie) y obtener la
 		// fecha de preservaciónde la misma
-		Date preservationDate = this.getInfoDocumentaryUnit(
+		LocalDate preservationDate = this.getInfoDocumentaryUnit(
 				request.getDocumentaryUnit());
 		// Validar existencia del tipo documental y obtener su información
 		String documentaryType = invokeDocumentaryTypeMicroservice(
@@ -98,18 +99,20 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		}
 		// Modificar fecha de conservación (cuando aplique)
 		if (request.getPreservationInfo() != null) {
-			Calendar c = Calendar.getInstance();
-			c.setTime(entity.getMetadataEntity().getPreservationDate());
+			LocalDate dateAux = null;
 			// Validar a que parte de la fecha se quiere agregar mas tiempo
 			// (dias, meses o anios)
 			if (request.getPreservationInfo().getPartDate().equals("DIAS")) {
-				c.add(Calendar.DAY_OF_YEAR, request.getPreservationInfo().getTime());
+				dateAux = entity.getMetadataEntity().getPreservationDate()
+						.plusDays(request.getPreservationInfo().getTime());
 			} else if (request.getPreservationInfo().getPartDate().equals("MESES")) {
-				c.add(Calendar.MONTH, request.getPreservationInfo().getTime());
+				dateAux = entity.getMetadataEntity().getPreservationDate()
+						.plusMonths(request.getPreservationInfo().getTime());
 			} else if (request.getPreservationInfo().getPartDate().equals("ANIOS")) {
-				c.add(Calendar.YEAR, request.getPreservationInfo().getTime());
+				dateAux = entity.getMetadataEntity().getPreservationDate()
+						.plusYears(request.getPreservationInfo().getTime());
 			}
-			entity.getMetadataEntity().setPreservationDate(c.getTime());
+			entity.getMetadataEntity().setPreservationDate(dateAux);
 		}
 		// Agregar nuevos metadatos especificos
 		if (request.getSpecificMetadata() != null) {
@@ -147,7 +150,7 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		}
 	}
 
-	private DocumentEntity toPersist(DocumentRequestDto request, Date preservationDate, String logicalFolder) {
+	private DocumentEntity toPersist(DocumentRequestDto request, LocalDate preservationDate, String logicalFolder) {
 		DocumentEntity entity = new DocumentEntity();
 		entity.setBinaryCode(request.getBinaryInfo().getFieldId());
 		// Metadata
@@ -219,7 +222,7 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		// Set información preservación del documento
 		response.setPreservationInfo(new PreservationInfo());
 		response.getPreservationInfo().setPreservatoinDate(entity.getMetadataEntity().getPreservationDate());
-		response.getPreservationInfo().setRemainingStorageTime(0);
+		response.getPreservationInfo().setConservationTime(Duration.between(LocalDate.now().atStartOfDay(), entity.getMetadataEntity().getPreservationDate().atStartOfDay()).toDays());
 		// Set información metadatos especificos
 		if (entity.getMetadataEntity().getSpecificMetadata()!=null) {
 			response.setSpecificMetadata(new ArrayList<>());
@@ -293,7 +296,8 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		}
 	}
 
-	private Date getInfoDocumentaryUnit(DocumentaryUnitDto documentaryUnit) {
+	private LocalDate getInfoDocumentaryUnit(DocumentaryUnitDto documentaryUnit) {
+		LocalDate date = LocalDate.now();
 		String infoDocumentaryUnit = null;
 		if (documentaryUnit.getIdSerie() != null && 
 			documentaryUnit.getIdSubserie() != null) {
@@ -305,10 +309,8 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		}
 		// Extraer fecha de preservación de la unidad documental
 		JSONObject jsonObjectDocumentaryUnit = new JSONObject(infoDocumentaryUnit);
-		Calendar c = Calendar.getInstance();
-		c.setTime(new Date());
-		c.add(Calendar.YEAR, (int) jsonObjectDocumentaryUnit.getLong("retentionTime"));
-		return c.getTime();
+		date = date.plusYears(jsonObjectDocumentaryUnit.getLong("retentionTime"));
+		return date;
 	}
 
 	private String invokeMicroserviceSerie(Long idSerie) {
