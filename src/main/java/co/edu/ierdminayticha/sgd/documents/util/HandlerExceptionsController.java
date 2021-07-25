@@ -37,7 +37,7 @@ public class HandlerExceptionsController extends ResponseEntityExceptionHandler 
 										 ex.getLocalizedMessage(), 
 										 Arrays.asList(ex.getMessage()));		
 
-		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+		return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
 
 	@ExceptionHandler({ GeneralException.class })
@@ -52,7 +52,7 @@ public class HandlerExceptionsController extends ResponseEntityExceptionHandler 
 										 HttpStatus.BAD_REQUEST,
 										 error, Arrays.asList(error));
 
-		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+		return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
 
 	}
 
@@ -70,7 +70,7 @@ public class HandlerExceptionsController extends ResponseEntityExceptionHandler 
 										 error, 
 										 null);
 
-		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+		return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
 
 	}
 
@@ -82,7 +82,7 @@ public class HandlerExceptionsController extends ResponseEntityExceptionHandler 
 		
 		log.info("HandlerExceptionsController : handleBindException {}", ex);
 
-		List<String> errors = new ArrayList<String>();
+		List<String> errors = new ArrayList<>();
 
 		for (FieldError error : ex.getBindingResult().getFieldErrors()) {
 			errors.add(error.getField() + ": " + error.getDefaultMessage());
@@ -109,7 +109,7 @@ public class HandlerExceptionsController extends ResponseEntityExceptionHandler 
 		
 		log.info("HandlerExceptionsController : handleMethodArgumentNotValid {}", ex);
 		
-		List<String> errors = new ArrayList<String>();
+		List<String> errors = new ArrayList<>();
 
 		for (FieldError error : ex.getBindingResult().getFieldErrors()) {
 			errors.add(error.getField() + ": " + error.getDefaultMessage());

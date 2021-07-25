@@ -1,7 +1,5 @@
 package co.edu.ierdminayticha.sgd.documents.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,8 +16,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "\"METADATOS_ESPECIFICOS_DOCUMENTO\"")
-public class SpecificMetadataEntity implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class SpecificMetadataEntity{
 
 	@Id
 	@SequenceGenerator(name = "\"SEQ_METADATOS_ESPECIFICOS_DOCUMENTO_ID\"", allocationSize = 1)

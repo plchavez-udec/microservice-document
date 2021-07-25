@@ -65,9 +65,7 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		String documentaryType = invokeDocumentaryTypeMicroservice(
 				request.getDocumentaryUnit().getDocumentaryType());
 		// Validar existencia del folder padre y obtener su información
-		String logicalFolder = this.invokeLogicalFolderByIdMicroservice(
-				request.getParent());
-		DocumentEntity entity = toPersist(request, preservationDate, logicalFolder);
+		DocumentEntity entity = toPersist(request, preservationDate);
 		// retornar respuesta
 		return createSuccessfulResponse(entity, documentaryType);
 	}
@@ -150,7 +148,7 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		}
 	}
 
-	private DocumentEntity toPersist(DocumentRequestDto request, LocalDate preservationDate, String logicalFolder) {
+	private DocumentEntity toPersist(DocumentRequestDto request, LocalDate preservationDate) {
 		DocumentEntity entity = new DocumentEntity();
 		entity.setBinaryCode(request.getBinaryInfo().getFieldId());
 		// Metadata
@@ -253,24 +251,6 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		} catch (HttpClientErrorException e) {
 			log.error("invokeDocumentaryTypeMicroservice - httpClientErrorException "
 					+ "falló, error: {}",e.getCause());
-			throw new GeneralException(e.getMessage());
-		}
-		return response;
-	}
-
-	private String invokeLogicalFolderByIdMicroservice(Long id) {
-		log.info("invokeLogicalFolderByIdMicroservice");
-		String response = null;
-		Map<String, Object> uriParams = new HashMap<>();
-		uriParams.put("logical-folder-id", id);
-		try {
-			String prueba = properties.getUrlGetLogicalFolderById();
-			ResponseEntity<String> responseEntity = 
-					this.restTemplate.getForEntity(prueba, String.class, uriParams);
-			response = responseEntity.getBody();
-		} catch (HttpClientErrorException e) {
-			log.error("invokeLogicalFolderByIdMicroservice - "
-					+ "httpClientErrorException {}", e.getCause());
 			throw new GeneralException(e.getMessage());
 		}
 		return response;
