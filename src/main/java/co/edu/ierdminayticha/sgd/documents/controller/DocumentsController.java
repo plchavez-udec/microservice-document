@@ -50,9 +50,9 @@ public class DocumentsController implements IDocumentsApi {
 	}
 
 	@Override
-	public ResponseEntity<String> delete(Long id) {
-		log.info("delete - Eliminar carpeta con id {}", id);
-		this.service.delete(id);
+	public ResponseEntity<String> delete(Long idParentFolder, Long idDocument) {
+		log.info("delete - Eliminar documento id {}", idDocument);
+		this.service.delete(idParentFolder, idDocument);
 		log.info("delete - Transacción exitosa, carpeta eliminado");
 		return ResponseEntity.ok().build();
 	}

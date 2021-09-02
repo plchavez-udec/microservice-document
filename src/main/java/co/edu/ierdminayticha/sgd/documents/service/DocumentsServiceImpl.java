@@ -130,11 +130,12 @@ public class DocumentsServiceImpl implements IDocumentsService {
 	}
 
 	@Override
-	public void delete(Long id) {
+	public void delete(Long idParentFolder, Long idDocument) {
 		log.info("delete");
-		DocumentEntity entity = this.repository.findById(id)
-				.orElseThrow(() -> new NoSuchElementException(
-						String.format(NO_EXISTEN_RESOURCE_MESSAGE, id)));
+		DocumentEntity entity = this.repository.findById(idDocument).orElseThrow(
+				() -> new NoSuchElementException(
+						String.format(NO_EXISTEN_RESOURCE_MESSAGE, idDocument)));			
+		this.invokeLogicalFolderDeleteChildren(idParentFolder, idDocument);
 		repository.delete(entity);
 	}
 
@@ -328,6 +329,20 @@ public class DocumentsServiceImpl implements IDocumentsService {
 			throw new GeneralException(e.getMessage());
 		}
 		return response;
+	}
+	
+	private void invokeLogicalFolderDeleteChildren(Long idParentFolder, Long idDocument) {
+		log.info("invokeLogicalFolderDeleteChildren");
+		Map<String, Object> uriParams = new HashMap<>();
+		uriParams.put("logical-folder-id", idParentFolder);
+		uriParams.put("child-id", idDocument);
+		try {
+			restTemplate.delete(properties.getUrlDeleteChildrenToFolder(), uriParams);
+		} catch (HttpClientErrorException e) {
+			log.error("invokeLogicalFolderDeleteChildren - "
+					+ "httpClientErrorException , error: {}", e.getCause());
+			throw new GeneralException(e.getMessage());
+		}
 	}
 
 }

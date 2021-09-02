@@ -27,5 +27,9 @@ public class Properties {
 	@Getter
 	@Value("${url.microservice.subserie.find-by-id}")
 	private String urlFindSubSerieById;
+	
+	@Getter
+	@Value("${url.microservice.logical-fodler.delete-children}")
+	private String urlDeleteChildrenToFolder;
 
 }

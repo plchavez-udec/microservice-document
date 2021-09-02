@@ -46,7 +46,9 @@ public interface IDocumentsApi {
 
 	@ApiOperation(value = "Eliminación de un documento",
 	  		  response = DocumentRequestDto.class)
-	@DeleteMapping(value = "{documento-id}")
-	ResponseEntity<String> delete(Long id);
+	@DeleteMapping(value = "{document-id}/parent-folder/{id-parent-folder}")
+	ResponseEntity<String> delete( 
+			@PathVariable("id-parent-folder") Long idParentFolder, 
+			@PathVariable("document-id") Long idDocument);
 
 }

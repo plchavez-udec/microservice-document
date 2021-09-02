@@ -8,5 +8,5 @@ public interface IDocumentsService {
 	DocumentResponseDto create(DocumentRequestDto dto);
 	DocumentResponseDto findById(Long id);
 	void update(Long id, DocumentUpdateRequestDto dto);
-	void delete(Long id);
+	void delete(Long idParentFolder, Long idDocument);
 }
