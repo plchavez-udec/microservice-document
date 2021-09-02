@@ -53,7 +53,7 @@ public class MetadataEntity {
 	private String contentType;
 	@Column(name = "\"FAMILIA_DOCUMENTO\"")
 	private String documentFamily;
-	@Column(name = "\"USUARIO_CREACION\"")
+	@Column(name = "\"USUARIO_CREA\"")
 	private String creationUser;
 	@Column(name = "\"FECHA_CREACION\"")
 	private Date creationDate;
