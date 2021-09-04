@@ -8,4 +8,5 @@ import co.edu.ierdminayticha.sgd.documents.entity.DocumentEntity;
 @Repository
 public interface IDocumentsRepository extends CrudRepository<DocumentEntity, Long> {
 
+
 }

@@ -12,8 +12,7 @@ public class DocumentResponseDto implements Serializable {
 
 	private Long id;
 	private Long parent;
-	private DocumentaryTypeOutDto documentaryType;
-	private SecurityLevelDto securityLevel;	
+	private DocumentaryTypeOutDto documentaryType;	
 	private DocumentInfoDto documentInfo;
 	private ContentInfoDto contentInfo;
 	private BinaryInfoDto binaryInfo;

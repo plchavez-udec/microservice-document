@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -20,6 +21,7 @@ import co.edu.ierdminayticha.sgd.documents.dto.BinaryInfoDto;
 import co.edu.ierdminayticha.sgd.documents.dto.ChildrenInDto;
 import co.edu.ierdminayticha.sgd.documents.dto.ContentInfoDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentInfoDto;
+import co.edu.ierdminayticha.sgd.documents.dto.DocumentListResponseDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentRequestDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentResponseDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentUpdateRequestDto;
@@ -42,6 +44,8 @@ public class DocumentsServiceImpl implements IDocumentsService {
 
 	private static final String EXISTING_RESOURCE_MESSAGE = "El documento con nombre (%s) ya existe";
 	private static final String NO_EXISTEN_RESOURCE_MESSAGE = "No existe el documento con id (%s) ";
+	private static final String NODE_TYPE_DOCUMENT = "DOCUMENT";
+    private final static double fB = 1024.0;
 
 	@Autowired
 	private IDocumentsRepository repository;
@@ -138,6 +142,37 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		this.invokeLogicalFolderDeleteChildren(idParentFolder, idDocument);
 		repository.delete(entity);
 	}
+	
+	@Override
+	public List<DocumentListResponseDto> findAll(String filter, 
+			String filterValue) {
+		log.info("findAll - obtener lista de documentos con filtro {}: {}", 
+				filter, filterValue);
+		List<DocumentListResponseDto> documentListDto = new ArrayList<>();
+		List<MetadataEntity> documentListEntity = null;
+		
+		if (filter.equals("NAME")) {
+			documentListEntity = this.metadataRepository.findByNameContaining(filterValue);
+		}else if (filter.equals("SM")) {
+			documentListEntity = this.metadataRepository.findBySpecificMetadata(filterValue);			
+		}else {
+			documentListEntity = this.metadataRepository.findByCreationUser(filterValue);
+		}
+		
+		documentListEntity.forEach(documentEntity -> {
+			DocumentListResponseDto documentDto =new DocumentListResponseDto();
+			documentDto.setId(documentEntity.getId());
+			documentDto.setNodeType(NODE_TYPE_DOCUMENT);
+			documentDto.setCreationDate(documentEntity.getCreationDate());
+			documentDto.setCreationUser(documentEntity.getCreationUser());
+			documentDto.setName(documentEntity.getName());
+			documentListDto.add(documentDto);
+		});
+		
+		return documentListDto;
+	}
+	
+	
 
 	private void validateExistenceResource(String name, Long idParent) {
 		MetadataEntity entity = 
@@ -161,11 +196,11 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		metadataEntity.setName(request.getDocumentInfo().getName());
 		metadataEntity.setCreationUser(request.getDocumentInfo().getCreationUser());
 		metadataEntity.setComment(request.getDocumentInfo().getComment());
-		metadataEntity.setCreationDate(new Date());
+		metadataEntity.setCreationDate(LocalDate.now());
 		// Set información del contenido del documento
 		metadataEntity.setContentType(request.getContentInfo().getContentType());
 		metadataEntity.setDocumentFamily(request.getContentInfo().getDocumentFamily());
-		metadataEntity.setSize(request.getContentInfo().getSize());
+		metadataEntity.setSize(Double.parseDouble(request.getContentInfo().getSize()));
 		// Set información del binario
 		metadataEntity.setFieldId(request.getBinaryInfo().getFieldId());
 		// Set información preservación del documento
@@ -214,7 +249,7 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		response.setContentInfo(new ContentInfoDto());
 		response.getContentInfo().setContentType(entity.getMetadataEntity().getContentType());
 		response.getContentInfo().setDocumentFamily(entity.getMetadataEntity().getDocumentFamily());
-		response.getContentInfo().setSize(entity.getMetadataEntity().getSize());
+		response.getContentInfo().setSize(this.getElementSize(entity.getMetadataEntity().getSize()));
 		// Set información del binario
 		response.setBinaryInfo(new BinaryInfoDto());
 		response.getBinaryInfo().setFieldId(entity.getMetadataEntity().getFieldId());
@@ -237,6 +272,45 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		}
 		return response;
 	}
+
+	public String getElementSize (Double size) {
+            double fL = size;
+            if (fL <= fB) {
+                return String.valueOf(fL).concat(" bytes");
+            } else {
+                double sizeKB = getFileSizeInKB(fL);
+                if(getFileSizeInKB(fL) <= fB)
+                    return String.valueOf(sizeKB).concat(" KB");
+                else {
+                    double sizeMB = getFileSizeInMB(fL);
+                    if(sizeMB <= fB)
+                        return String.valueOf(sizeMB).concat(" MB");
+                    else {
+                        double sizeGB = getFileSizeInGB(fL);
+                            return String.valueOf(sizeGB).concat(" GB");
+
+                    }
+                }
+            }
+    }
+ 
+    private double getFileSizeInKB (double f) {
+        f = (f/fB);
+        int fs = (int) Math.pow(10,2);
+        return Math.rint(f*fs)/fs;
+    }
+ 
+    private double getFileSizeInMB (double f) {
+        f = f / Math.pow(fB,2);
+        int fs = (int) Math.pow(10,2);
+        return Math.rint(f*fs)/fs;
+    }
+
+    private double getFileSizeInGB (double f) {
+        f = f / Math.pow(fB,3);
+        int fs = (int) Math.pow(10,2);
+        return Math.rint(f*fs)/fs;
+    }
 
 	private String invokeDocumentaryTypeMicroservice(Long id) {
 		log.info("invokeDocumentaryTypeMicroservice");

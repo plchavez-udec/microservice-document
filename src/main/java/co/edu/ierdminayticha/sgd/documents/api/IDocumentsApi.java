@@ -1,5 +1,7 @@
 package co.edu.ierdminayticha.sgd.documents.api;
 
+import java.util.List;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -8,7 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import co.edu.ierdminayticha.sgd.documents.dto.DocumentListResponseDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentRequestDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentResponseDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentUpdateRequestDto;
@@ -28,6 +32,13 @@ public interface IDocumentsApi {
 	ResponseEntity<DocumentResponseDto> create( 
 			@Validated(IRequestCreateValidation.class)
 			@RequestBody DocumentRequestDto request);
+	
+	@ApiOperation(value = "Obtener lista de documentos",
+            response = DocumentResponseDto.class)
+	@GetMapping(value = "", 
+		    produces = MediaType.APPLICATION_JSON_VALUE)
+	ResponseEntity<List<DocumentListResponseDto>> findAll( @RequestParam String filter, 
+			@RequestParam String filterValue);
 
 	@ApiOperation(value = "Obtener documento por Id",
 	              response = DocumentResponseDto.class)

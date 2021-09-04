@@ -1,6 +1,7 @@
 package co.edu.ierdminayticha.sgd.documents.dto;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -14,7 +15,7 @@ public class DocumentInfoDto implements Serializable {
 
 	private String creationUser; //po debajo
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-	private Date creationDate;
+	private LocalDate creationDate;
 	private Date lastModifiedDate;
 	private String name;
 	private String comment;

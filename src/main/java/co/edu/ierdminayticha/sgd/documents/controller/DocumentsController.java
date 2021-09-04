@@ -1,6 +1,7 @@
 package co.edu.ierdminayticha.sgd.documents.controller;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import co.edu.ierdminayticha.sgd.documents.api.IDocumentsApi;
+import co.edu.ierdminayticha.sgd.documents.dto.DocumentListResponseDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentRequestDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentResponseDto;
 import co.edu.ierdminayticha.sgd.documents.dto.DocumentUpdateRequestDto;
@@ -55,6 +57,12 @@ public class DocumentsController implements IDocumentsApi {
 		this.service.delete(idParentFolder, idDocument);
 		log.info("delete - Transacción exitosa, carpeta eliminado");
 		return ResponseEntity.ok().build();
+	}
+	
+	@Override
+	public ResponseEntity<List<DocumentListResponseDto>> findAll(String filter, String filterValue) {
+		List<DocumentListResponseDto> response = this.service.findAll(filter, filterValue);
+		return ResponseEntity.ok(response);
 	}
 
 	private ResponseEntity<DocumentResponseDto> buildCreationResponse(DocumentResponseDto response) {

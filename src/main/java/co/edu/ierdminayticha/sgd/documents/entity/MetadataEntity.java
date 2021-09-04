@@ -40,7 +40,7 @@ public class MetadataEntity {
 	@Column(name = "\"COMENTARIO\"")
 	private String comment;
 	@Column(name = "\"TAMANO\"")
-	private Integer size;
+	private Double size;
 	@Column(name = "\"CODIGO_BINARIO\"")
 	private String fieldId;
 	@Column(name = "\"FECHA_CONSERVACION\"")
@@ -56,7 +56,7 @@ public class MetadataEntity {
 	@Column(name = "\"USUARIO_CREA\"")
 	private String creationUser;
 	@Column(name = "\"FECHA_CREACION\"")
-	private Date creationDate;
+	private LocalDate creationDate;
 	@Column(name = "\"FECHA_MODIFICACION\"")
 	private Date lastModifiedDate;
 	@OneToMany(mappedBy = "metadata", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
