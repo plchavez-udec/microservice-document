@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +35,13 @@ import co.edu.ierdminayticha.sgd.documents.exception.GeneralException;
 import co.edu.ierdminayticha.sgd.documents.repository.IDocumentsRepository;
 import co.edu.ierdminayticha.sgd.documents.repository.IMetadataRepository;
 import co.edu.ierdminayticha.sgd.documents.util.Properties;
+import co.edu.ierdminayticha.sgd.documents.util.ResponseCodeConstants;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
 public class DocumentsServiceImpl implements IDocumentsService {
 
-	private static final String EXISTING_RESOURCE_MESSAGE = "El documento con nombre (%s) ya existe";
-	private static final String NO_EXISTEN_RESOURCE_MESSAGE = "No existe el documento con id (%s) ";
 	private static final String NODE_TYPE_DOCUMENT = "DOCUMENT";
     private final static double fB = 1024.0;
 
@@ -78,8 +76,9 @@ public class DocumentsServiceImpl implements IDocumentsService {
 	public DocumentResponseDto findById(Long id) {
 		log.info("findById");
 		DocumentEntity entity = this.repository.findById(id)
-				.orElseThrow(() -> new NoSuchElementException(
-						String.format(NO_EXISTEN_RESOURCE_MESSAGE, id)));
+				.orElseThrow(() -> new GeneralException(
+						ResponseCodeConstants.ERROR_BUSINESS_DOCUMENT_NOT_EXIST));
+		
 		String documentaryType = this.invokeDocumentaryTypeMicroservice(
 				entity.getMetadataEntity().getDocumentaryType());
 		return createSuccessfulResponse(entity, documentaryType);
@@ -89,8 +88,9 @@ public class DocumentsServiceImpl implements IDocumentsService {
 	public void update(Long id, DocumentUpdateRequestDto request) {
 		log.info("update");
 		DocumentEntity entity = this.repository.findById(id)
-				.orElseThrow(() -> new NoSuchElementException(
-						String.format(NO_EXISTEN_RESOURCE_MESSAGE, id)));
+				.orElseThrow(() -> new GeneralException(
+						ResponseCodeConstants.ERROR_BUSINESS_DOCUMENT_NOT_EXIST));
+		
 		// Modificación del nombre
 		if (request.getName() != null) {
 			entity.getMetadataEntity().setName(request.getName());
@@ -136,9 +136,11 @@ public class DocumentsServiceImpl implements IDocumentsService {
 	@Override
 	public void delete(Long idParentFolder, Long idDocument) {
 		log.info("delete");
-		DocumentEntity entity = this.repository.findById(idDocument).orElseThrow(
-				() -> new NoSuchElementException(
-						String.format(NO_EXISTEN_RESOURCE_MESSAGE, idDocument)));			
+		
+		DocumentEntity entity = this.repository.findById(idDocument)
+				.orElseThrow(() -> new GeneralException(
+						ResponseCodeConstants.ERROR_BUSINESS_DOCUMENT_NOT_EXIST));
+		
 		this.invokeLogicalFolderDeleteChildren(idParentFolder, idDocument);
 		repository.delete(entity);
 	}
@@ -180,7 +182,7 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		if (entity != null) {
 			log.info("validateExistenceOfResource - El documento con nombre ({})"
 					+ " ya existe en la carpeta actual", name);
-			throw new GeneralException(String.format(EXISTING_RESOURCE_MESSAGE, name));
+			throw new GeneralException(ResponseCodeConstants.ERROR_BUSINESS_DOCUMENT_ALREADY_EXIST);
 		}
 	}
 
@@ -231,8 +233,9 @@ public class DocumentsServiceImpl implements IDocumentsService {
 	private DocumentResponseDto createSuccessfulResponse(DocumentEntity entity, String documentaryType) {
 		DocumentResponseDto response = new DocumentResponseDto();
 		// Set información general
-		response.setId(entity.getId());
+		response.setId(entity.getId());		
 		response.setParent(entity.getMetadataEntity().getParent());
+//		response.setLocation(this.setLocationDocument(entity.getMetadataEntity().getParent()));
 		// Set información tipo documental
 		response.setDocumentaryType(new DocumentaryTypeOutDto());
 		JSONObject jsonObjectDocumentaryType = new JSONObject(documentaryType);
@@ -271,6 +274,17 @@ public class DocumentsServiceImpl implements IDocumentsService {
 
 		}
 		return response;
+	}
+
+	private String setLocationDocument(Long parent) {
+		//String responseLogicalFolder = this.invokeLogicalFolderById(parent);		
+		//return this.extractLocationFolderFromResponse(responseLogicalFolder);
+		return null;
+	}
+
+	private String extractLocationFolderFromResponse(String responseLogicalFolder) {
+		
+		return null;
 	}
 
 	public String getElementSize (Double size) {
@@ -326,7 +340,7 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		} catch (HttpClientErrorException e) {
 			log.error("invokeDocumentaryTypeMicroservice - httpClientErrorException "
 					+ "falló, error: {}",e.getCause());
-			throw new GeneralException(e.getMessage());
+			throw new GeneralException(ResponseCodeConstants.ERROR_INVOKING_GET_DOCUMENTARY_TYPE_SERVICE);
 		}
 		return response;
 	}
@@ -347,7 +361,7 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		} catch (HttpClientErrorException e) {
 			log.error("invokeLogicalFolderAddChildren - httpClientErrorException) "
 					+ "falló, error: {}", e.getCause());
-			throw new GeneralException(e.getMessage());
+			throw new GeneralException(ResponseCodeConstants.ERROR_INVOKING_GET_ADD_CHILDREN_SERVICE);
 		}
 	}
 
@@ -381,7 +395,7 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		} catch (HttpClientErrorException e) {
 			log.error("invokeMicroserviceSerie - httpClientErrorException falló, "
 					+ "error: {}", e.getCause());
-			throw new GeneralException(e.getMessage());
+			throw new GeneralException(ResponseCodeConstants.ERROR_INVOKING_GET_SERIE_SERVICE);
 		}
 		return response;
 	}
@@ -400,7 +414,7 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		} catch (HttpClientErrorException e) {
 			log.error("invokeMicroserviceSunSerie - httpClientErrorException, "
 					+ "error: {}", e.getCause());
-			throw new GeneralException(e.getMessage());
+			throw new GeneralException(ResponseCodeConstants.ERROR_INVOKING_GET_SUBSER_SERVICE);
 		}
 		return response;
 	}
@@ -415,7 +429,21 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		} catch (HttpClientErrorException e) {
 			log.error("invokeLogicalFolderDeleteChildren - "
 					+ "httpClientErrorException , error: {}", e.getCause());
-			throw new GeneralException(e.getMessage());
+			throw new GeneralException(ResponseCodeConstants.ERROR_INVOKING_GET_DELETE_CHILDREN_SERVICE);
+		}
+	}
+	
+	private String invokeLogicalFolderById(Long idFolder) {
+		log.info("invokeLogicalFolderById");
+		Map<String, Object> uriParams = new HashMap<>();
+		uriParams.put("logical-folder-id", idFolder);
+		try {			
+			return restTemplate.getForObject(
+					properties.getUrlGetFolderById(), String.class, uriParams);
+		} catch (HttpClientErrorException e) {
+			log.error("invokeLogicalFolderById - "
+					+ "httpClientErrorException , error: {}", e.getCause());
+			throw new GeneralException(ResponseCodeConstants.ERROR_INVOKING_GET_FOLDER_ID_SERVICE);
 		}
 	}
 

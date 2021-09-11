@@ -12,6 +12,7 @@ public class DocumentResponseDto implements Serializable {
 
 	private Long id;
 	private Long parent;
+	private String location;
 	private DocumentaryTypeOutDto documentaryType;	
 	private DocumentInfoDto documentInfo;
 	private ContentInfoDto contentInfo;

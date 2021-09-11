@@ -18,6 +18,7 @@ public class ErrorDto implements Serializable {
 	private LocalDateTime timeStamp;
 	private int codeStatus;
 	private HttpStatus status;
+	private String codeMessage;
 	private String message;
 	private List<String> errors;
 
