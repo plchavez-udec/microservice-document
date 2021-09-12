@@ -45,7 +45,8 @@ public interface IDocumentsApi {
 	@GetMapping(value = "/{documento-id}", 
 			    produces = MediaType.APPLICATION_JSON_VALUE)
 	ResponseEntity<DocumentResponseDto> findById(
-			@PathVariable("documento-id") Long id);
+			@PathVariable("documento-id") Long id,
+			@RequestParam String location);
 
 	@ApiOperation(value = "Actualización parcial del documento",
       	  		  response = DocumentRequestDto.class)

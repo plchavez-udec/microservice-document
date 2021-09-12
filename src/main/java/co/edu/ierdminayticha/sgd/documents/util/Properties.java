@@ -31,9 +31,5 @@ public class Properties {
 	@Getter
 	@Value("${url.microservice.logical-fodler.delete-children}")
 	private String urlDeleteChildrenToFolder;
-	
-	@Getter
-	@Value("${url.microservice.logical-fodler.findById}")
-	private String urlGetFolderById;
 
 }

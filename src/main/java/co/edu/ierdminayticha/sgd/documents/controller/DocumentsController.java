@@ -36,9 +36,9 @@ public class DocumentsController implements IDocumentsApi {
 	}
 
 	@Override
-	public ResponseEntity<DocumentResponseDto> findById(Long id) {
+	public ResponseEntity<DocumentResponseDto> findById(Long id, String location) {
 		log.info("findById - Consultar carpeta con id " + "{}", id);
-		DocumentResponseDto response = this.service.findById(id);
+		DocumentResponseDto response = this.service.findById(id, location);
 		log.info("findById - Transacción exitosa, carpeta: {}", response);
 		return ResponseEntity.ok(response);
 	}

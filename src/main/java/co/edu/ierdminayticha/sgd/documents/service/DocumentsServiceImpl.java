@@ -69,11 +69,11 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		// Validar existencia del folder padre y obtener su información
 		DocumentEntity entity = toPersist(request, preservationDate);
 		// retornar respuesta
-		return createSuccessfulResponse(entity, documentaryType);
+		return createSuccessfulResponse(entity, documentaryType, "N");
 	}
 
 	@Override
-	public DocumentResponseDto findById(Long id) {
+	public DocumentResponseDto findById(Long id, String location) {
 		log.info("findById");
 		DocumentEntity entity = this.repository.findById(id)
 				.orElseThrow(() -> new GeneralException(
@@ -81,7 +81,7 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		
 		String documentaryType = this.invokeDocumentaryTypeMicroservice(
 				entity.getMetadataEntity().getDocumentaryType());
-		return createSuccessfulResponse(entity, documentaryType);
+		return createSuccessfulResponse(entity, documentaryType, location);
 	}
 
 	@Override
@@ -163,6 +163,7 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		
 		documentListEntity.forEach(documentEntity -> {
 			DocumentListResponseDto documentDto =new DocumentListResponseDto();
+			documentDto.setLocation(this.setLocationFolder(documentEntity));
 			documentDto.setId(documentEntity.getId());
 			documentDto.setNodeType(NODE_TYPE_DOCUMENT);
 			documentDto.setCreationDate(documentEntity.getCreationDate());
@@ -172,9 +173,18 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		});
 		
 		return documentListDto;
+	}	
+
+	private String setLocationFolder(MetadataEntity entity) {
+		String responseLogicalFolderById =  this.invokeLogicalFolderById(entity.getParent());		
+		return this.extractLocationFromResponseLogicalFolderById(responseLogicalFolderById);
 	}
-	
-	
+
+	private String extractLocationFromResponseLogicalFolderById(String responseLogicalFolderById) {
+		JSONObject response = new JSONObject(responseLogicalFolderById);
+		JSONObject objFolderInfo = response.getJSONObject("folderInfo");
+		return response.getString("location").concat(" / ").concat(objFolderInfo.getString("name"));
+	}
 
 	private void validateExistenceResource(String name, Long idParent) {
 		MetadataEntity entity = 
@@ -230,12 +240,14 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		return entity;
 	}
 
-	private DocumentResponseDto createSuccessfulResponse(DocumentEntity entity, String documentaryType) {
+	private DocumentResponseDto createSuccessfulResponse(DocumentEntity entity, String documentaryType, String location) {
 		DocumentResponseDto response = new DocumentResponseDto();
 		// Set información general
 		response.setId(entity.getId());		
 		response.setParent(entity.getMetadataEntity().getParent());
-//		response.setLocation(this.setLocationDocument(entity.getMetadataEntity().getParent()));
+		if (location.equals("S")) {
+			response.setLocation(this.setLocationFolder(entity.getMetadataEntity()));
+		}
 		// Set información tipo documental
 		response.setDocumentaryType(new DocumentaryTypeOutDto());
 		JSONObject jsonObjectDocumentaryType = new JSONObject(documentaryType);
@@ -274,17 +286,6 @@ public class DocumentsServiceImpl implements IDocumentsService {
 
 		}
 		return response;
-	}
-
-	private String setLocationDocument(Long parent) {
-		//String responseLogicalFolder = this.invokeLogicalFolderById(parent);		
-		//return this.extractLocationFolderFromResponse(responseLogicalFolder);
-		return null;
-	}
-
-	private String extractLocationFolderFromResponse(String responseLogicalFolder) {
-		
-		return null;
 	}
 
 	public String getElementSize (Double size) {
@@ -439,7 +440,7 @@ public class DocumentsServiceImpl implements IDocumentsService {
 		uriParams.put("logical-folder-id", idFolder);
 		try {			
 			return restTemplate.getForObject(
-					properties.getUrlGetFolderById(), String.class, uriParams);
+					properties.getUrlGetLogicalFolderById(), String.class, uriParams);
 		} catch (HttpClientErrorException e) {
 			log.error("invokeLogicalFolderById - "
 					+ "httpClientErrorException , error: {}", e.getCause());
